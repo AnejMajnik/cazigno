@@ -29,3 +29,6 @@ pub const EMPTY: t.Cell = t.Cell {.character = ' ', .color = 37};
 
 // Player state
 pub var player: t.Player = t.Player{.coins = 0};
+
+// Cost of spins
+pub const spin_cost: u64 = 10;

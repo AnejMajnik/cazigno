@@ -32,6 +32,17 @@ fn addCoins(io: std.Io, amount: u64) !void {
     var buf: [64]u8 = undefined;
     const str = try std.fmt.bufPrint(&buf, "coins={}", .{g.player.coins});
     try fileio.writeSavefile(io, str);
+
+    render.printPlayerCoins();
+}
+
+fn removeCoins(io: std.Io, amount: u64) !void {
+    g.player.coins -= amount;
+    var buf: [64]u8 = undefined;
+    const str = try std.fmt.bufPrint(&buf, "coins={}", .{g.player.coins});
+    try fileio.writeSavefile(io, str);
+
+    render.printPlayerCoins();
 }
 
 pub fn spinLosingSymbols(io: std.Io) void {
@@ -47,6 +58,7 @@ pub fn spinLosingSymbols(io: std.Io) void {
 }
 
 pub fn spin(io: std.Io) !void {
+    try removeCoins(io, g.spin_cost);
     try render.spinningAnimation(io);
     const random_num: u16 = generateRandomNumber(io, u16, 1, 1000);
 
@@ -79,12 +91,11 @@ pub fn spin(io: std.Io) !void {
         else => print("Error", .{}),
     }
 
-    g.current_buffer[10][g.MAX_COLUMNS/2-6] = Cell {.character = g.symbols_to_draw[0].symbol, .color = g.symbols_to_draw[0].color};
-    g.current_buffer[10][g.MAX_COLUMNS/2] = Cell {.character = g.symbols_to_draw[1].symbol, .color = g.symbols_to_draw[1].color};
-    g.current_buffer[10][g.MAX_COLUMNS/2+6] = Cell {.character = g.symbols_to_draw[2].symbol, .color = g.symbols_to_draw[2].color};
+    g.current_buffer[5][g.MAX_COLUMNS/2-6] = Cell {.character = g.symbols_to_draw[0].symbol, .color = g.symbols_to_draw[0].color};
+    g.current_buffer[5][g.MAX_COLUMNS/2] = Cell {.character = g.symbols_to_draw[1].symbol, .color = g.symbols_to_draw[1].color};
+    g.current_buffer[5][g.MAX_COLUMNS/2+6] = Cell {.character = g.symbols_to_draw[2].symbol, .color = g.symbols_to_draw[2].color};
 
     try render.refreshScreenDiff();
-    render.printPlayerCoins();
 }
 
 fn generateRandomNumber(io: std.Io, comptime T: type, comptime min: T, comptime max: T) T {

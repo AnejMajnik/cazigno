@@ -8,7 +8,6 @@ const engine = @import("engine/engine.zig");
 const render = @import("render/render.zig");
 
 // --------------- INIT ----------------
-
 // Sets the terminal size values
 fn setTerminalSize() t.WinsizeError!void {
     const rc = std.os.linux.ioctl(std.posix.STDOUT_FILENO, std.os.linux.T.IOCGWINSZ, @intFromPtr(&g.ws));
@@ -64,7 +63,9 @@ pub fn main(init: std.process.Init) !void {
         if (read_char > 0) {
             switch (buf[0]) {
                 ' ' => {
-                    try engine.spin(io);
+                    if (g.player.coins >= g.spin_cost) {
+                        try engine.spin(io);
+                    }
                 },
                 'q' => { 
                     render.clearScreen();

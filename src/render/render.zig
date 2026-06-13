@@ -17,23 +17,23 @@ pub fn drawSlotMachine() !void {
     print("\x1b[?25l", .{});
 
     // Draw initial slot machine
-    g.current_buffer[10][g.MAX_COLUMNS/2-8] = Cell {.character = '[', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-7] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 31 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-5] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-4] = Cell {.character = ']', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-3] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-2] = Cell {.character = '[', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2-1] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2]   = Cell {.character = '7', .color = 31 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+1] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+2] = Cell {.character = ']', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+3] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+4] = Cell {.character = '[', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+5] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 31 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+7] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[10][g.MAX_COLUMNS/2+8] = Cell {.character = ']', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-8] = Cell {.character = '[', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-7] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 31 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-5] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-4] = Cell {.character = ']', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-3] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-2] = Cell {.character = '[', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-1] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2]   = Cell {.character = '7', .color = 31 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+1] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+2] = Cell {.character = ']', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+3] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+4] = Cell {.character = '[', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+5] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 31 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+7] = Cell {.character = ' ', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+8] = Cell {.character = ']', .color = 34 };
 
     try refreshScreenDiff();
     printPlayerCoins();
@@ -68,9 +68,9 @@ pub fn spinningAnimation(io: std.Io) !void {
 
         engine.spinLosingSymbols(io);
 
-        g.current_buffer[10][g.MAX_COLUMNS/2-6] = Cell {.character = symbols_to_draw[0].symbol, .color = symbols_to_draw[0].color};
-        g.current_buffer[10][g.MAX_COLUMNS/2] = Cell {.character = symbols_to_draw[1].symbol, .color = symbols_to_draw[1].color};
-        g.current_buffer[10][g.MAX_COLUMNS/2+6] = Cell {.character = symbols_to_draw[2].symbol, .color = symbols_to_draw[2].color};
+        g.current_buffer[5][g.MAX_COLUMNS/2-6] = Cell {.character = symbols_to_draw[0].symbol, .color = symbols_to_draw[0].color};
+        g.current_buffer[5][g.MAX_COLUMNS/2] = Cell {.character = symbols_to_draw[1].symbol, .color = symbols_to_draw[1].color};
+        g.current_buffer[5][g.MAX_COLUMNS/2+6] = Cell {.character = symbols_to_draw[2].symbol, .color = symbols_to_draw[2].color};
 
         try refreshScreenDiff();
         try io.sleep(std.Io.Duration.fromMilliseconds(current_ms), .awake);
