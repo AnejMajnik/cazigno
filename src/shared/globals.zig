@@ -28,7 +28,7 @@ pub var current_buffer: [500][500]t.Cell = @splat(@splat(EMPTY));
 pub const EMPTY: t.Cell = t.Cell {.character = ' ', .color = 37};
 
 // Player state
-pub var player: t.Player = t.Player{.coins = 0};
+pub var player: t.Player = t.Player{ .coins = 100 };
 
 // Cost of spins
 pub const spin_cost: u64 = 10;
