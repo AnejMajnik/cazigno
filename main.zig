@@ -37,6 +37,7 @@ const symbols = [5]Symbol{
     Symbol{.symbol = 'Y', .worth = 100},
     Symbol{.symbol = '0', .worth = 50},
 };
+
 var symbolsToDraw: [3]Symbol = undefined;
 
 // Terminal size
@@ -54,6 +55,8 @@ var current_buffer: [500][500]Cell = @splat(@splat(EMPTY));
 // Empty cell
 const EMPTY: Cell = Cell {.character = ' ', .color = 37};
 
+// Player state
+var player: Player = Player{.coins = 0};
 
 // --------------- INIT ----------------
 
@@ -174,7 +177,79 @@ fn playSound() void {
     print("\x07", .{});
 }
 
+// ----------- FILES ------------
+fn writeSavefile(io: std.Io, content: []const u8) !void {
+    // Get cwd
+    const cwd: std.Io.Dir = std.Io.Dir.cwd();
+
+    // Try to make a new directory - if it exists, do nothing
+    cwd.createDir(io, "savefiles", .default_dir) catch |e| switch (e) {
+        error.PathAlreadyExists => {},
+        else => return e,
+    };
+
+    // Open directory
+    var output_dir: std.Io.Dir = try cwd.openDir(io, "savefiles", .{});
+    defer output_dir.close(io);
+
+    // Open/create file
+    const file: std.Io.File = try output_dir.createFile(io, "savefile.txt", .{});
+    defer file.close(io);
+
+    // Write to file
+    var file_writer = file.writer(io, &.{});
+    const writer = &file_writer.interface;
+
+    _ = try writer.write(content);
+}
+
+fn readSavefile(io: std.Io, content: []u8) ![]u8 {
+    // Get cwd
+    const cwd = std.Io.Dir.cwd();
+
+    // Open directory
+    var output_dir = try cwd.openDir(io, "savefiles", .{});
+    defer output_dir.close(io);
+
+    // Open file
+    const file = try output_dir.openFile(io, "savefile.txt", .{});
+    defer file.close(io);
+
+    // Read
+    var file_reader = file.reader(io, &.{});
+    const reader = &file_reader.interface;
+
+    const bytes_read = try std.Io.Reader.readSliceShort(reader, content);
+
+    return content[0..bytes_read];
+}
+
 // ----------- GAME LOGIC ------------
+
+fn initPlayer(io: std.Io) !void {
+    var content: [64]u8 = undefined;
+    const data: []const u8 = try readSavefile(io, &content);
+
+    if (data.len > 0) {
+        var it = std.mem.tokenizeAny(u8, data, " =\n");
+
+        var i: usize = 0;
+        while (it.next()) |word| {
+            i += 1;
+            if (i%2 == 0) {
+                player.coins = try std.fmt.parseInt(u64, word, 10);
+            }
+        }
+    }
+}
+
+fn addCoins(io: std.Io, amount: u64) !void {
+    player.coins += amount;
+    var buf: [64]u8 = undefined;
+    const str = try std.fmt.bufPrint(&buf, "coins={}", .{player.coins});
+    try writeSavefile(io, str);
+}
+
 fn generateRandomNumber(io: std.Io, comptime T: type, comptime min: T, comptime max: T) T {
     const rng: std.Random.IoSource = .{ .io = io };
     const rand = rng.interface();
@@ -208,18 +283,23 @@ fn spin(io: std.Io) !void {
         },
         801...900 => {
             symbolsToDraw = @splat(symbols[4]);
+            try addCoins(io, symbols[4].worth);
         },
         901...950 => {
             symbolsToDraw = @splat(symbols[3]);
+            try addCoins(io, symbols[3].worth);
         },
         951...980 => {
             symbolsToDraw = @splat(symbols[2]);
+            try addCoins(io, symbols[2].worth);
         },
         981...999 => {
             symbolsToDraw = @splat(symbols[1]);
+            try addCoins(io, symbols[1].worth);
         },
         1000 => {
             symbolsToDraw = @splat(symbols[0]);
+            try addCoins(io, symbols[0].worth);
         },
         else => print("Error", .{}),
     }
@@ -229,12 +309,17 @@ fn spin(io: std.Io) !void {
     current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = 32};
 
     try refreshScreenDiff();
+    print("\n\nPlayer coins: {}", .{player.coins});
 }
 
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
     var running = true;
+
+    try initPlayer(io);
+
+    print("Player coins: {}\n", .{player.coins});
 
     // Get terminal size in rows and columns
     try setTerminalSize();
