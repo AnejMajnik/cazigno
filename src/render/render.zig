@@ -16,7 +16,17 @@ pub fn drawSlotMachine() !void {
     // Hide cursor
     print("\x1b[?25l", .{});
 
-    // Draw initial slot machine
+    // Draw top border
+    var i: usize = g.MAX_COLUMNS/2-10;
+    while (i <= g.MAX_COLUMNS/2+10) : (i += 1) {
+        g.current_buffer[4][i] = Cell {.character = '#', .color = 34};
+    }
+
+    // Draw side borders
+    g.current_buffer[5][g.MAX_COLUMNS/2-10] = Cell {.character = '#', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2+10] = Cell {.character = '#', .color = 34 };
+
+    // Draw slot machine fields
     g.current_buffer[5][g.MAX_COLUMNS/2-8] = Cell {.character = '[', .color = 34 };
     g.current_buffer[5][g.MAX_COLUMNS/2-7] = Cell {.character = ' ', .color = 34 };
     g.current_buffer[5][g.MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 31 };
@@ -34,6 +44,12 @@ pub fn drawSlotMachine() !void {
     g.current_buffer[5][g.MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 31 };
     g.current_buffer[5][g.MAX_COLUMNS/2+7] = Cell {.character = ' ', .color = 34 };
     g.current_buffer[5][g.MAX_COLUMNS/2+8] = Cell {.character = ']', .color = 34 };
+
+    // Draw bottom border
+    i = g.MAX_COLUMNS/2-10;
+    while (i <= g.MAX_COLUMNS/2+10) : (i += 1) {
+        g.current_buffer[6][i] = Cell {.character = '#', .color = 34};
+    }
 
     try refreshScreenDiff();
     printPlayerCoins();
