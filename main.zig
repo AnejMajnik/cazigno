@@ -18,9 +18,26 @@ const Cell = struct {
     color: u8,
 };
 
+// Symbol struct
+const Symbol = struct {
+    symbol: u8,
+    worth: u64,
+};
+
+// Player struct
+const Player = struct {
+    coins: u64,
+};
+
 // Slot symbols
-const symbols = [5]u8{'7', '@', 'X', 'Y', 'O'};
-var symbolsToDraw: [3]u8 = undefined;
+const symbols = [5]Symbol{
+    Symbol{.symbol = '7', .worth = 1000},
+    Symbol{.symbol = '@', .worth = 500},
+    Symbol{.symbol = 'X', .worth = 250},
+    Symbol{.symbol = 'Y', .worth = 100},
+    Symbol{.symbol = '0', .worth = 50},
+};
+var symbolsToDraw: [3]Symbol = undefined;
 
 // Terminal size
 var ws: std.posix.winsize = undefined;
@@ -36,6 +53,7 @@ var current_buffer: [500][500]Cell = @splat(@splat(EMPTY));
 
 // Empty cell
 const EMPTY: Cell = Cell {.character = ' ', .color = 37};
+
 
 // --------------- INIT ----------------
 
@@ -125,9 +143,9 @@ fn spinningAnimation(io: std.Io) !void {
 
         spinLosingSymbols(io);
 
-        current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0], .color = 32};
-        current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1], .color = 32};
-        current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2], .color = 32};
+        current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0].symbol, .color = 32};
+        current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1].symbol, .color = 32};
+        current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = 32};
 
         try refreshScreenDiff();
         try io.sleep(std.Io.Duration.fromMilliseconds(current_ms), .awake);
@@ -147,7 +165,7 @@ fn resetCursorPos() void {
 
 fn arrContains(char: u8) bool {
     for (symbolsToDraw) |sym| {
-        if (sym == char) return true;
+        if (sym.symbol == char) return true;
     }
     return false;
 }
@@ -194,10 +212,10 @@ fn spin(io: std.Io) !void {
         901...950 => {
             symbolsToDraw = @splat(symbols[3]);
         },
-        951...975 => {
+        951...980 => {
             symbolsToDraw = @splat(symbols[2]);
         },
-        976...999 => {
+        981...999 => {
             symbolsToDraw = @splat(symbols[1]);
         },
         1000 => {
@@ -206,9 +224,9 @@ fn spin(io: std.Io) !void {
         else => print("Error", .{}),
     }
 
-    current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0], .color = 32};
-    current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1], .color = 32};
-    current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2], .color = 32};
+    current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0].symbol, .color = 32};
+    current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1].symbol, .color = 32};
+    current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = 32};
 
     try refreshScreenDiff();
 }
