@@ -21,6 +21,7 @@ const Cell = struct {
 // Symbol struct
 const Symbol = struct {
     symbol: u8,
+    color: u8,
     worth: u64,
 };
 
@@ -31,11 +32,11 @@ const Player = struct {
 
 // Slot symbols
 const symbols = [5]Symbol{
-    Symbol{.symbol = '7', .worth = 1000},
-    Symbol{.symbol = '@', .worth = 500},
-    Symbol{.symbol = 'X', .worth = 250},
-    Symbol{.symbol = 'Y', .worth = 100},
-    Symbol{.symbol = '0', .worth = 50},
+    Symbol{.symbol = '7', .color = 31, .worth = 2500},
+    Symbol{.symbol = '@', .color = 32, .worth = 500},
+    Symbol{.symbol = 'X', .color = 33, .worth = 250},
+    Symbol{.symbol = 'Y', .color = 35, .worth = 100},
+    Symbol{.symbol = '0', .color = 36, .worth = 50},
 };
 
 var symbolsToDraw: [3]Symbol = undefined;
@@ -98,23 +99,24 @@ fn drawSlotMachine() !void {
     // Draw initial slot machine
     current_buffer[10][MAX_COLUMNS/2-8] = Cell {.character = '[', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2-7] = Cell {.character = ' ', .color = 34 };
-    current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 32 };
+    current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 31 };
     current_buffer[10][MAX_COLUMNS/2-5] = Cell {.character = ' ', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2-4] = Cell {.character = ']', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2-3] = Cell {.character = ' ', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2-2] = Cell {.character = '[', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2-1] = Cell {.character = ' ', .color = 34 };
-    current_buffer[10][MAX_COLUMNS/2]   = Cell {.character = '7', .color = 32 };
+    current_buffer[10][MAX_COLUMNS/2]   = Cell {.character = '7', .color = 31 };
     current_buffer[10][MAX_COLUMNS/2+1] = Cell {.character = ' ', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2+2] = Cell {.character = ']', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2+3] = Cell {.character = ' ', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2+4] = Cell {.character = '[', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2+5] = Cell {.character = ' ', .color = 34 };
-    current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 32 };
+    current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 31 };
     current_buffer[10][MAX_COLUMNS/2+7] = Cell {.character = ' ', .color = 34 };
     current_buffer[10][MAX_COLUMNS/2+8] = Cell {.character = ']', .color = 34 };
 
     try refreshScreenDiff();
+    printPlayerCoins();
 }
 
 fn refreshScreenDiff() !void {
@@ -137,7 +139,7 @@ fn drawCharAt(x: u16, y: u16, cell: Cell) DrawError!void {
 
 fn spinningAnimation(io: std.Io) !void {
     const min_ms: i64 = 50;
-    const max_ms: i64 = 500;
+    const max_ms: i64 = 450;
     const interval_ms: i64 = 50;
     var current_ms: i64 = min_ms;
 
@@ -146,13 +148,18 @@ fn spinningAnimation(io: std.Io) !void {
 
         spinLosingSymbols(io);
 
-        current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0].symbol, .color = 32};
-        current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1].symbol, .color = 32};
-        current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = 32};
+        current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0].symbol, .color = symbolsToDraw[0].color};
+        current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1].symbol, .color = symbolsToDraw[1].color};
+        current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = symbolsToDraw[2].color};
 
         try refreshScreenDiff();
         try io.sleep(std.Io.Duration.fromMilliseconds(current_ms), .awake);
     }
+}
+
+fn printPlayerCoins() void {
+    resetCursorPos();
+    print("Player coins: {}\n", .{player.coins});
 }
 
 
@@ -304,12 +311,12 @@ fn spin(io: std.Io) !void {
         else => print("Error", .{}),
     }
 
-    current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0].symbol, .color = 32};
-    current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1].symbol, .color = 32};
-    current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = 32};
+    current_buffer[10][MAX_COLUMNS/2-6] = Cell {.character = symbolsToDraw[0].symbol, .color = symbolsToDraw[0].color};
+    current_buffer[10][MAX_COLUMNS/2] = Cell {.character = symbolsToDraw[1].symbol, .color = symbolsToDraw[1].color};
+    current_buffer[10][MAX_COLUMNS/2+6] = Cell {.character = symbolsToDraw[2].symbol, .color = symbolsToDraw[2].color};
 
     try refreshScreenDiff();
-    print("\n\nPlayer coins: {}", .{player.coins});
+    printPlayerCoins();
 }
 
 
@@ -318,8 +325,6 @@ pub fn main(init: std.process.Init) !void {
     var running = true;
 
     try initPlayer(io);
-
-    print("Player coins: {}\n", .{player.coins});
 
     // Get terminal size in rows and columns
     try setTerminalSize();
