@@ -8,3 +8,6 @@ Later on, I might add more games to it.
 
 ## Why
 Because who doesnt love gambling.
+
+## How to run it
+Go to root of the project, then run `zig build run`
