@@ -12,6 +12,7 @@ pub const DrawError = error {
 pub const Cell = struct {
     character: u8,
     color: u8,
+    bg_color: ?u8 = null,
 };
 
 // Symbol struct

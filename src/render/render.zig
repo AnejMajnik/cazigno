@@ -23,27 +23,27 @@ pub fn drawSlotMachine() !void {
     }
 
     // Draw side borders
-    g.current_buffer[5][g.MAX_COLUMNS/2-10] = Cell {.character = '#', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+10] = Cell {.character = '#', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-10] = Cell {.character = '#', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+10] = Cell {.character = '#', .color = 34};
 
     // Draw slot machine fields
-    g.current_buffer[5][g.MAX_COLUMNS/2-8] = Cell {.character = '[', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-7] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 31 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-5] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-4] = Cell {.character = ']', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-3] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-2] = Cell {.character = '[', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2-1] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2]   = Cell {.character = '7', .color = 31 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+1] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+2] = Cell {.character = ']', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+3] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+4] = Cell {.character = '[', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+5] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 31 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+7] = Cell {.character = ' ', .color = 34 };
-    g.current_buffer[5][g.MAX_COLUMNS/2+8] = Cell {.character = ']', .color = 34 };
+    g.current_buffer[5][g.MAX_COLUMNS/2-8] = Cell {.character = '[', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2-7] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2-6] = Cell {.character = '7', .color = 31};
+    g.current_buffer[5][g.MAX_COLUMNS/2-5] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2-4] = Cell {.character = ']', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2-3] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2-2] = Cell {.character = '[', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2-1] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2]   = Cell {.character = '7', .color = 31};
+    g.current_buffer[5][g.MAX_COLUMNS/2+1] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+2] = Cell {.character = ']', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+3] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+4] = Cell {.character = '[', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+5] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+6] = Cell {.character = '7', .color = 31};
+    g.current_buffer[5][g.MAX_COLUMNS/2+7] = Cell {.character = ' ', .color = 34};
+    g.current_buffer[5][g.MAX_COLUMNS/2+8] = Cell {.character = ']', .color = 34};
 
     // Draw bottom border
     i = g.MAX_COLUMNS/2-10;
@@ -69,7 +69,11 @@ pub fn refreshScreenDiff() !void {
 
 fn drawCharAt(x: u16, y: u16, cell: Cell) t.DrawError!void {
     if (x > 0 and y > 0) {
-        print("\x1b[{};{}H\x1b[{}m{c}\x1b[0m", .{y, x, cell.color, cell.character});
+        if (cell.bg_color != null) {
+            print("\x1b[{};{}H\x1b[{};{}m{c}\x1b[0m", .{y, x, cell.bg_color.?, cell.color, cell.character});
+        } else {
+            print("\x1b[{};{}H\x1b[{}m{c}\x1b[0m", .{y, x, cell.color, cell.character});
+        }
     }
 }
 

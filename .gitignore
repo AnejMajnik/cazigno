@@ -1,5 +1,7 @@
 savefiles
 
+TODO.md
+
 # Zig build artifacts
 .zig-cache/
 zig-out/
